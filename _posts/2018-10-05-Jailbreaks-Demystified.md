@@ -425,3 +425,17 @@ Restoring the snapshot if you wanna fully unjailbreak should be as simple as run
 ```bash
 snapUtil -n orig-fs com.apple.os.update-(manifestHash) /
 ```
+
+### Special thanks
+<ul>
+<li>Jonathan Levin for his <a href="http://newosxbook.com/index.php">books</a>, tools and impressive patience with me and my odd questions - YOU ROCK!</li>
+<li>@Pwn20Wnd for pushing me to learn more (and more) and being supportive </li>
+<li>ETA Folks / reditters / naggers for making me laugh from time to time </li>
+<li>IBSparkes for answering many of my questions during all these months</li>
+</ul>
+
+### License for the diagrams
+The diagrams are all built by myself in a tedious process, however, I license them as MIT. Use them as you please as long as you credit me.
+
+### Errare humanum est!
+If you find anything wrong in the article feel free to trash-talk me on reddit or better yet, to tell me on Twitter :P
