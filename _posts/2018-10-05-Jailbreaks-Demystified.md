@@ -193,6 +193,11 @@ UIApplication.shared.open(url, options: [:], completionHandler: nil)
 ```
 
 So does that mean you bypassed SandBox because you were able to pass data to another app and open it? Not even close. All you did was through a very well controlled set of APIs. You don't know that Phone app exists. iOS knows.
+Here's how SandBoxing feels for an application.
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/15067741/46547949-9760f500-c89b-11e8-966a-fef2dbfb28d9.png"/>
+</p>
 
 SandBox escaping can be done in multiple ways.
 
@@ -202,12 +207,219 @@ QiLin (and therefore LiberiOS and Osiris Jailbreak) escape the SandBox by assumi
 
 Of course, QiLin saves our application's credentials and restores them before exiting, that is to prevent creating panics due to the various locks that govern the kernel creds. 
 
-Here's how SandBoxing feels for an application.
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/15067741/46547725-cb87e600-c89a-11e8-8cef-c013c101b35f.png"/>
-</p>
-
 Electra for iOS 11.2.x -> iOS 11.3.1 also uses the same kernel credential method for sandbox bypass and other privs.
 
+### Remounting the File System
 
+So, we exploited the kernel and got kernel memory R/W, we exploited a bug or we bestowed ourselves the kernel credentials so we also exited the SandBox, now we wanna drop our payload (which can contain Cydia, binaries, config files, dummy files for checking whether the jailbreak was installed, etc). To be able to do that, we need to have Write persmissions over the file system. By default, the iOS ROOT FS is mounted as Read Only, so we will need to remount that, hence the name of the patch: Root FS Remount.
+
+This is the component that was missing back in July 2018 when Electra for iOS 11.3.1 was in development, and most of the eta folks went haywire.
+
+So, how do we do that?
+
+On QiLin (and therefore on LiberiOS and Osiris Jailbreak), the remounting up to iOS 11.2.6 works this way:
+As I said, by default the ROOT FS is mounted as read only. Not only that, the SandBox also has a hook that prevents you from remounting it as Read / Write. The hook is enforced through a MACF calls in mount_begin_update() and mount_common(). All the hook does it to check for the presence of the <code class="high">MNT_ROOTFS</code> flag in the mount flags. If it exists, the operation fails. So what QiLin does? Simple. It turns off the <code class="high">MNT_ROOTFS</code> flag. 
+
+The following listing is the <code class="high">remountRootFS</code> in the QiLin Toolkit and was made publicly available by Jonathan Levin on newosxbook.com and in the Volume III of *OS Internals.
+
+```c
+int remountRootFS (void)
+{
+   ...
+   uint64_t rootVnodeAddr = findKernelSymbol("_rootvnode");
+   uint64_t *actualVnodeAddr;
+   struct vnode *rootvnode = 0;
+   char *v_mount;
+   status("Attempting to remount rootFS...\n");
+   readKernelMemory(rootVnodeAddr, sizeof(void *), &actualVnodeAddr);
+   readKernelMemory(*actualVnodeAddr, sizeof(struct vnode), &rootvnode);
+   readKernelMemory(rootvnode->v_mount, 0x100, &v_mount);
+   // Disable MNT_ROOTFS momentarily, remounts , and then flips the flag back
+   uint32_t mountFlags = (*(uint32_t * )(v_mount + 0x70)) & ~(MNT_ROOTFS | MNT_RDONLY);
+   writeKernelMemory(((char *)rootvnode->v_mount) + 0x70 ,sizeof(mountFlags), &mountFlags);
+   char *opts = strdup("/dev/disk0s1s1");
+   // Not enough to just change the MNT_RDONLY flag - we have to call
+   // mount(2) again, to refresh the kernel code paths for mounting..
+   int rc = mount("apfs", "/", MNT_UPDATE, (void *)&opts);
+   printf("RC: %d (flags: 0x%x) %s \n", rc, mountFlags, strerror(errno));
+   mountFlags |= MNT_ROOTFS;
+   writeKernelMemory(((char *)rootvnode->v_mount) + 0x70 ,sizeof(mountFlags), &mountFlags);
+   // Quick test:
+   int fd = open ("/test.txt", O_TRUNC| O_CREAT);
+   if (fd < 0) { error ("Failed to remount /"); }
+   else {
+     status("Mounted / as read write :-)\n");
+     unlink("/test.txt"); // clean up
+   }
+ return 0;
+```
+Jonathan Levin's code is pretty straightforward. Flip the MNT_ROOTFS flag, call <code class="high">mount(2)</code> to refresh the kernel code paths for mounting, restore the flag and test. Done. You're R/W. 
+
+On older jailbreaks patches to <code class="high">LightweightVolumeManager::_mapForIO</code> were done. 
+
+iOS 11.3 took it a step further by involving APFS Snaphots. APFS has been used for quite a long time in iOS at the moment when Apple started using the snaphots, but when they did it broke the tried and true remount we had for iOS 11.2.x and even older. To fix this, a new bug needed to be found. the problem is that iOS would revert to a snapshot which is mounted read-only, so everything we install in terms of tweaks, binaries, etc is gone.
+
+At this point two things can be done: Change the whole jailbreaking and go ROOTless, or find a way around the snapshots.
+It is thanks to @Pwn20wnd and @umanghere that a proper remount has been created. Umang has found a bug that pwn20wnd has exploited in Electra.
+
+Pwn20wnd's bypass for this snapshot problem is also a very straightforward one.
+Here is the function from the source code of Electra for iOS 11.3.1:
+
+```c
+int remountRootAsRW(uint64_t slide, uint64_t kern_proc, uint64_t our_proc, int snapshot_success){
+    if (/* iOS 11.2.6 or lower don't need snapshot */ kCFCoreFoundationVersionNumber <= 1451.51 || /* we're already remounted properly */ snapshot_success == 0){
+        return remountRootAsRW_old(slide, kern_proc, our_proc);
+    }
+    
+    if (!getOffsets(slide)){
+        return -1;
+    }
+    
+    uint64_t kernucred = rk64(kern_proc+offsetof_p_ucred);
+    uint64_t ourucred = rk64(our_proc+offsetof_p_ucred);
+     
+    uint64_t vfs_context = get_vfs_context();
+    
+    char *dev_path = "/dev/disk0s1s1";
+    uint64_t devVnode = getVnodeAtPath(vfs_context, dev_path);
+    uint64_t specInfo = rk64(devVnode + offsetof_v_specinfo);
+    
+    wk32(specInfo + offsetof_si_flags, 0); //clear dev vnode's v_specflags
+    
+    if (file_exists(ROOTFSMNT))
+        rmdir(ROOTFSMNT);
+    
+    mkdir(ROOTFSMNT, 0755);
+    chown(ROOTFSMNT, 0, 0);
+    
+    printf("Temporarily setting kern ucred\n");
+    
+    wk64(our_proc+offsetof_p_ucred, kernucred);
+    
+    int rv = -1;
+    
+    if (mountDevAsRWAtPath(dev_path, ROOTFSMNT) != ERR_SUCCESS) {
+        printf("Error mounting root at %s\n", ROOTFSMNT);
+        
+        goto out;
+    }
+    
+    /* APFS snapshot mitigation bypass bug by CoolStar, exploitation by Pwn20wnd */
+    /* Disables the new APFS snapshot mitigations introduced in iOS 11.3 */
+    
+    printf("Disabling the APFS snapshot mitigations\n");
+    
+    const char *systemSnapshot = find_system_snapshot(ROOTFSMNT);
+    const char *newSystemSnapshot = "orig-fs";
+    
+    if (!systemSnapshot) {
+        goto out;
+    }
+    
+    int rvrename = do_rename(ROOTFSMNT, systemSnapshot, newSystemSnapshot);
+    
+    if (rvrename) {
+        goto out;
+    }
+    
+    rv = 0;
+
+    unmount(ROOTFSMNT, 0);
+    rmdir(ROOTFSMNT);
+    
+out:
+    printf("Restoring our ucred\n");
+    
+    wk64(our_proc+offsetof_p_ucred, ourucred);
+    
+    //cleanup
+    vnode_put(devVnode);
+    
+    if (!rv) {
+        printf("Disabled the APFS snapshot mitigations\n");
+        
+        printf("Restarting\n");
+        restarting();
+        sleep(2);
+        do_restart();
+    } else {
+        printf("Failed to disable the APFS snapshot mitigations\n");
+    }
+    
+    return -1;
+}
+```
+
+It may look complicated. That's because it is. It took Pwn20wnd a lot of work to achieve this bypass, but once the bug was known, the problem started to fall apart. See, the bug is very simple: iOS will revert to an APFS System snapshot after every reboot if there is one. Here's the catch - if there is one. If there isn't, instead of bootlooping or erroring out in a destructive way, iOS casually continues booting just like it did on iOS 11.2.6 where there was no snapshot. 
+
+So the patch? Find and rename the snapshot to something else.
+
+The implementation? A bit more complicated.
+If you analyze the code you can see that the name of said snapshot is dynamic (or at least contains a dynamic part) so it cannot be hardcoded. The dynamic part happens to be the <code class="high">boot-manifest-hash</code>. Before doing anything, Pwn20wnd seems to be bestowing himself the kernel credentials.
+
+You can find it yourself by running:
+
+```bash
+ioreg -p IODeviceTree -l | grep boot-manifest-hash
+```
+In the Electra, all the logic for finding the boot-manifest-hash is located in <code class="high">apfs_util.c</code> as you can see here:
+
+```c
+char *copyBootHash(void) {
+    unsigned char buf[1024];
+    uint32_t length = 1024;
+    io_registry_entry_t chosen = IORegistryEntryFromPath(kIOMasterPortDefault, "IODeviceTree:/chosen");
+    
+    if (!MACH_PORT_VALID(chosen)) {
+        printf("Unable to get IODeviceTree:/chosen port\n");
+        return NULL;
+    }
+    
+    kern_return_t ret = IORegistryEntryGetProperty(chosen, "boot-manifest-hash", (void*)buf, &length);
+    
+    IOObjectRelease(chosen);
+    
+    if (ret != ERR_SUCCESS) {
+        printf("Unable to read boot-manifest-hash\n");
+        return NULL;
+    }
+    
+    // Make a hex string out of the hash
+    char manifestHash[length*2+1];
+    bzero(manifestHash, sizeof(manifestHash));
+    
+    int i;
+    for (i=0; i<length; i++) {
+        sprintf(manifestHash+i*2, "%02X", buf[i]);
+    }
+    
+    printf("Hash: %s\n", manifestHash);
+    return strdup(manifestHash);
+}
+```
+
+This function is called from inside another function called <code class="high">find_system_snapshot</code> which handles the logic for finding the snapshot itself. The function appends the retrieved manifestHash to the hard-coded part which is <code class="high">com.apple.os.update-</code> resulting in the real name of the current snapshot. It then returns the snapshot name to the caller, but not before printing it out loud :P
+
+```c
+const char *find_system_snapshot(const char *rootfsmnt) {
+    char *bootHash = copyBootHash();
+    char *system_snapshot = malloc(sizeof(char *) + (21 + strlen(bootHash)));
+    bzero(system_snapshot, sizeof(char *) + (21 + strlen(bootHash)));
+    
+    if (!bootHash) {
+        return NULL;
+    }
+    sprintf(system_snapshot, "com.apple.os.update-%s", bootHash);
+    printf("System snapshot: %s\n", system_snapshot);
+    return system_snapshot;
+}
+```
+With kernel's credentials in place, and with the proper name of the snapshot, Pwn20wnd returns back into rootfs_remount.c for the last part of this magnificent exploit - renaming the Snapshot. He renames it to "orig-fs", then he checks if the renaming succeeded. Then he restores his own credentials and drops kernel's. Finally, he reboots the device. That's why the first time you use Electra for iOS 11.3-11.3.1 your device will have a mandatory reboot no matter which exploit you use. 
+
+Now that the snapshot has been renamed, iOS has no snapshot to mount so it simply doesn't. Problem solved. 10/10 - IGN.
+
+### Reverting Electra's changes:
+Restoring the snapshot if you wanna fully unjailbreak should be as simple as running 
+```bash
+snapUtil -n orig-fs com.apple.os.update-(manifestHash) /
+```
