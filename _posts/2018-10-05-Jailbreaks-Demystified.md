@@ -257,6 +257,8 @@ Jonathan Levin's code is pretty straightforward. Flip the MNT_ROOTFS flag, call 
 
 On older jailbreaks patches to <code class="high">LightweightVolumeManager::_mapForIO</code> were done. 
 
+### Electra's remount
+
 iOS 11.3 took it a step further by involving APFS Snapshots. APFS has been used for quite a long time in iOS at the moment when Apple started using the snapshots, but when they did it broke the tried and true remount we had for iOS 11.2.x and even older. To fix this, a new bug needed to be found. the problem is that iOS would revert to a snapshot which is mounted read-only, so everything we install in terms of tweaks, binaries, etc is gone.
 
 At this point two things can be done: Change the whole jailbreaking and go ROOTless, or find a way around the snapshots.
