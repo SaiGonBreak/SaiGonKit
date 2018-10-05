@@ -88,7 +88,7 @@ LC 06: LC_SYMTAB
 ....
 ```
 
-Do you see the __TEXT.__objc_cons2 section? 
+Do you see the <code class="high">__TEXT.__objc_cons2 section</code>?
 
 If you do 0x10029ed87 - 0x10003dc04 = 2494851 bytes (decimal) => 2.494851 Megabytes
 That is hell of a big section. No wonder. It is the embedded IPA file. objc_cons1, objc_cons2 and objc_cons3 are all embedded parts of the jailbreak payload (the untether, plists, libraries etc).
@@ -133,8 +133,8 @@ drwxrwxrwx  0 0      0           0 Jun 27  2014 Payload/ipa1.app/zh-Hans.lproj/
 Saigon:~ geosn0w$ 
 
 ```
-Doing a `tar xvf` will extract the contents to a "Payload" folder. 
-So the IPA file that gets deployed on the phone is actually ipa1. As you can see, there is a file called `embedded.mobileprovision` which contains the enterprise certificate. If we Right-click on it and select "Get Info", Finder is capable to show us some information about the embedded certificate. As you can see, it belongs to "Hefei Bo Fang", whatever that is.
+Doing a <code class="high">tar xvf</code> will extract the contents to a "Payload" folder. 
+So the IPA file that gets deployed on the phone is actually ipa1. As you can see, there is a file called <code class="high">embedded.mobileprovision</code> which contains the enterprise certificate. If we Right-click on it and select "Get Info", Finder is capable to show us some information about the embedded certificate. As you can see, it belongs to "Hefei Bo Fang", whatever that is.
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/15067741/46533169-a763df00-c871-11e8-884b-fa51df3b0f6e.png"/>
@@ -144,7 +144,7 @@ So the IPA file that gets deployed on the phone is actually ipa1. As you can see
 
 As you can see, Pangu, like many other jailbreaks relied on developer certificate to bypass the CodeSign, but getting the IPA deployed to the device is not as easy as you may think. Nowadays we quickly fire Cydia Impactor, drag and drop the IPA, sign in and there we go. This wasn't the case until iOS 9.0, so Pangu had to do what other jailbreak teams before them did - use Apple against itself.
 
-iTunes can easily communicate with the device and up until iTunes 12.x, iTunes was capable to handle iOS applications too. It was since stripped off this functionality but that hinted to the fact that one or more frameworks (or DLLs for the Windows folk) has to be able to create a connection to the device and perform application related tasks. Of course, we are talking about AppleMobileDevice.(framework / dll). Shipped with iTunes and its driver packages, this framework was largely used in the jailbreaks before and it is still used by all these "Backup iOS / Photos / Contacts / Whatever" programs on Windows to communicate reliably with the device. The APIs are, of course, private but they were reversed to shit and beyond by multiple researchers. They were also recreated in the `libimobiledevice` project.
+iTunes can easily communicate with the device and up until iTunes 12.x, iTunes was capable to handle iOS applications too. It was since stripped off this functionality but that hinted to the fact that one or more frameworks (or DLLs for the Windows folk) has to be able to create a connection to the device and perform application related tasks. Of course, we are talking about AppleMobileDevice.(framework / dll). Shipped with iTunes and its driver packages, this framework was largely used in the jailbreaks before and it is still used by all these "Backup iOS / Photos / Contacts / Whatever" programs on Windows to communicate reliably with the device. The APIs are, of course, private but they were reversed to shit and beyond by multiple researchers. They were also recreated in the <code class="high">libimobiledevice</code> project.
 
 As you can see, with that in place, Pangu could finally talk to the device and drop the payload at the right moment.
 The rest follows an almost formulaic set of canonical patches I am going to discuss below.
