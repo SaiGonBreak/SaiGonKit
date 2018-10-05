@@ -184,7 +184,7 @@ Of course, as an Application on iOS, not only you cannot see the File System and
 
 Some applications also provide uri schemes for you to communicate with them. Let's say you are in Chrome on iOS and you find a phone number to a company you wanna call. If you press it, you get asked if you really wanna call, and then you go straight to the Call app from iOS and the number is already being dialed. How? 
 
-Simple. the Phone application has registered an uri scheme that looks like this: <code class="high">tel://XXXXXXXXXXXX</a> so if you add tel://5552220001 to a html page and click it in Safari, the iOS knows who to open to handle that. Same goes for Facebook, Whatsapp, 
+Simple. the Phone application has registered an uri scheme that looks like this: <code class="high">tel://XXXXXXXXXXXX</code> so if you add tel://5552220001 to a html page and click it in Safari, the iOS knows who to open to handle that. Same goes for Facebook, Whatsapp, 
 
 To use the URI scheme from your app, you just have to call the right UIApplication method. That is 
 
