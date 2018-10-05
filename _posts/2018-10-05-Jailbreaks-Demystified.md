@@ -149,13 +149,65 @@ iTunes can easily communicate with the device and up until iTunes 12.x, iTunes w
 As you can see, with that in place, Pangu could finally talk to the device and drop the payload at the right moment.
 The rest follows an almost formulaic set of canonical patches I am going to discuss below.
 
+Pangu was my desired example here because it is fairly new so it applies most of the following patches (compared to redsn0w etc) and also because it is one of the jailbreaks I have used myself a lot on an iPhone 4 I still happen to have.
+
+I mostly given it as an example so that you can see the difference between getting to bypass CodeSign back then vs getting to bypass CodeSign now. 
+
 ### Canonical Patches
 
-Pangu was my desired example here because it is fairly new so it applies most of the following patches (compared to redsn0w etc) and also because it is one of the jailbreaks I have used myself a lot on an iPhone 4 I still happen to have.
 
 I have created the following diagram which should (in theory) show the flow of most jailbreaks. Of course, the implementation and techniques would be different from iOS version to iOS version and some jailbreaks may do the actions in a totally different order.
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/15067741/46536163-aa63cd00-c87b-11e8-88c3-f0c5c37bb494.png"/>
 </p>
+
+So, as you can see from the diagram, the most important step is getting on the device. You cannot do much from outside the device. The entry vector can be different from jailbreak to jailbreak. Nowadays, most jailbreaks including my Osiris, Coolstar & Co's Electra and Jonathan's LiberiOS use the IPA applications signed with a temporary certificate and deployed with either Xcode or Cydia Impactor (or a signing service) to the device. From there, the application is executed by the user and the exploit is triggered.
+
+Other methods include but are not limited to WebKit exploits, mail exploits, etc. 
+The WebKit ones are more common. TotallyNotSpyware is a good example of an iOS 10.x to 10.3.3 64-Bit Jailbreak, and if we talk legacy, JailbreakMe series are probably the best example. These WebKit-based jailbreaks are usually deployed by accessing a website in Safari on the device. The website is crafted so that it exploits a webkit vulnerability (WebKit is at Safari's core), and thus gaining arbitrary code execution.
+
+In the rest of this write-up I will assume an IPA based Jailbreak like Osiris, LiberiOS or Electra. Also, this write-up assumes we already have a raw kernel exploit that gives us TFP0, and the KPPless approach.
+
+After the application has been successfully installed and can run, CodeSign is no longer a problem, at least for the initial stage. We still cannot run unsigned or fake-signed binaries, but at least we can run ourselves (the exploit application) without being killed by AMFI. However, the problem is that we are still limited by the SandBox. The SandBox keeps us from accessing anything outside our container, so no R/W permissions for us. All we can see is our own data, nothing more. That has to change. We have to bestow ourselves the might of Shai Hulud!
+
+The SandBox is a kernel extension (KEXT) which ensures that you do not access more than you're supposed to access. By default, everything in /var/mobile/Containers is sandboxed. Apple's own default applications are also sandboxed. When you install an application via Xcode, the App Store or via Cydia Impactor, you are automatically placing the application in /var/mobile/Containers/Bundle/Application/<UUID of the APP>. There is no other way to install an app, so our jailbreak application will be sandboxed by default, no matter what.
+
+So how do apps have access to the services required in order for them to run?! How can Deezer connect to my Bluetooth headset? How can YouTube decode frames? How can Twitter send me notifications? It's simple, through APIs. These APIs allow your containerized app to communicate in a controlled manner with Core Services (bluetoothd, wifid, mediaserverd, etc) which are also sandboxed, and these Core Services talk with the kexts / kernel through IOKit. So no, you don't directly talk to the kernel.
+The following diagram should help you see how this looks like.
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/15067741/46547236-4fd96980-c899-11e8-8d48-1947418eb777.png"/>
+</p>
+
+Of course, as an Application on iOS, not only you cannot see the File System and the User Data, but you are also largely oblivious of the existence of any other applications. Yes, through some APIs you can pass files / data to another application if that other application is registered as one that accepts to handle such input, but even then, you as an application don't know anything about the existence of the other app and it is through the series of APIs provided by iOS that you pass your .PDF file for example to be opened in whatever application. 
+
+Some applications also provide uri schemes for you to communicate with them. Let's say you are in Chrome on iOS and you find a phone number to a company you wanna call. If you press it, you get asked if you really wanna call, and then you go straight to the Call app from iOS and the number is already being dialed. How? 
+
+Simple. the Phone application has registered an uri scheme that looks like this: <code class="high">tel://XXXXXXXXXXXX</a> so if you add tel://5552220001 to a html page and click it in Safari, the iOS knows who to open to handle that. Same goes for Facebook, Whatsapp, 
+
+To use the URI scheme from your app, you just have to call the right UIApplication method. That is 
+
+```swift
+UIApplication.shared.open(url, options: [:], completionHandler: nil)
+```
+
+So does that mean you bypassed SandBox because you were able to pass data to another app and open it? Not even close. All you did was through a very well controlled set of APIs. You don't know that Phone app exists. iOS knows.
+
+SandBox escaping can be done in multiple ways.
+
+Osiris Jailbreak uses QiLin's built-in SandBox escape which is called "ShaiHulud", a Dune reference.
+
+QiLin (and therefore LiberiOS and Osiris Jailbreak) escape the SandBox by assuming Kernel's credentials. Not only that, but since now we have the Kernel's credentials, we have access to whatever we want including syscals like execve(), fork(), and posix_spawn()! Jonathan Levin has explained very well how QiLin proceeds in escaping the sandbox and assuming the kernel creds <a href="http://newosxbook.com/QiLin/qilin.pdf"> in this write-up</a>, part of the <code class="high"><a href="https://www.amazon.com/MacOS-iOS-Internals-III-Insecurity/dp/0991055535/ref=as_sl_pc_qf_sp_asin_til?tag=newosxbookcom-20&linkCode=w00&linkId=0b61c945365c9c37cd3cf88f10a5f629&creativeASIN=0991055535">*OS Internals Volume III</a></code>
+
+Of course, QiLin saves our application's credentials and restores them before exiting, that is to prevent creating panics due to the various locks that govern the kernel creds. 
+
+Here's how SandBoxing feels for an application.
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/15067741/46547725-cb87e600-c89a-11e8-8cef-c013c101b35f.png"/>
+</p>
+
+Electra for iOS 11.2.x -> iOS 11.3.1 also uses the same kernel credential method for sandbox bypass and other privs.
+
 
