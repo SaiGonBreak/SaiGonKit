@@ -90,13 +90,13 @@ LC 06: LC_SYMTAB
 
 Do you see the <code class="high">__TEXT.__objc_cons2 section</code>?
 
-If you do 0x10029ed87 - 0x10003dc04 = 2494851 bytes (decimal) => 2.494851 Megabytes
-That is hell of a big section. No wonder. It is the embedded IPA file. objc_cons1, objc_cons2 and objc_cons3 are all embedded parts of the jailbreak payload (the untether, plists, libraries etc).
+If you do 0x10029ed87 - 0x10003dc04 = 2494851 bytes (decimal) => 2.494851 Megabyte.
+That is hell of a big section. No wonder, It is the embedded IPA file. objc_cons1, objc_cons2 and objc_cons3 are all embedded parts of the jailbreak payload (the untether, plists, libraries etc).
 
 In fact, let's not talk about it, let's see it! 
 
 Jtool is a very powerful tool. It has the ability to extract whole sections from a binary. The command is jtool -e (extract) /path.
-If we do that to the Pangu binary we will get a new file called "pangu.__TEXT.__objc_cons2" which so happens to be identified by the file(1) as being a "gzip compressed data, from Unix", so a <code class="high">tar xvf</code> should be able to list the contents quite fine.
+If we do that to the Pangu binary we will get a new file called "pangu.__TEXT.__objc_cons2" which so happens to be identified by the file(1) as being a "gzip compressed data, from Unix", so a <code class="high">tar tvf</code> should be able to list the contents quite fine.
 It can and it does.
 
 ```bash
