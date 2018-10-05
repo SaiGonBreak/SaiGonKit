@@ -159,7 +159,7 @@ I mostly gave it as an example so that you can see the difference between gettin
 I have created the following diagram which should (in theory) show the flow of most jailbreaks. Of course, the implementation and techniques would be different from iOS version to iOS version and some jailbreaks may do the actions in a totally different order.
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/15067741/46536163-aa63cd00-c87b-11e8-88c3-f0c5c37bb494.png"/>
+  <img src="https://user-images.githubusercontent.com/15067741/46557813-31836600-c8b9-11e8-9171-116a8ea7f939.png"/>
 </p>
 
 So, as you can see from the diagram, the most important step is getting on the device. You cannot do much from outside the device. The entry vector can be different from jailbreak to jailbreak. Nowadays, most jailbreaks including my Osiris, Coolstar & Co's Electra and Jonathan's LiberiOS use the IPA applications signed with a temporary certificate and deployed with either Xcode or Cydia Impactor (or a signing service) to the device. From there, the application is executed by the user and the exploit is triggered.
