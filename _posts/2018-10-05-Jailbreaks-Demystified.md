@@ -96,7 +96,7 @@ That is hell of a big section. No wonder. It is the embedded IPA file. objc_cons
 In fact, let's not talk about it, let's see it! 
 
 Jtool is a very powerful tool. It has the ability to extract whole sections from a binary. The command is jtool -e (extract) /path.
-If we do that to the Pangu binary we will get a new file called "pangu.__TEXT.__objc_cons2" which so happens to be identified by the file(1) as being a "gzip compressed data, from Unix", so a `tar tvf` should be able to list the contents quite fine.
+If we do that to the Pangu binary we will get a new file called "pangu.__TEXT.__objc_cons2" which so happens to be identified by the file(1) as being a "gzip compressed data, from Unix", so a <code class="high">tar xvf</code> should be able to list the contents quite fine.
 It can and it does.
 
 ```bash
