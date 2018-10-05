@@ -25,7 +25,7 @@ body {
 
 .container {
   margin: 0 auto;
-  max-width: 740px;
+  max-width: 1000px;
   padding: 0 10px;
   width: 100%;
 }
@@ -277,7 +277,11 @@ nav {
   border-bottom: 1px solid #ddd;
   background-color: $lightGray;
 }
-
+#high {
+  font-family: 'Consolas','Courier', monospace;
+  font-size: 13px;
+  background-color: #e8e8e8;
+}
 footer {
   padding: 20px 0;
   text-align: center;
