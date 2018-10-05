@@ -1,30 +1,62 @@
 ---
 layout: page
-title: About
+title: WHOAMI
+permalink: /about/
 ---
+<p>
 
-<p class="message">
-  Hey there! This page is included as an example. Feel free to customize it for your own use upon downloading. Carry on!
+geosn0w:~ geosn0w$ whoami
+
 </p>
+<p align="center">
+<img src="https://image.ibb.co/mkXiMn/lol.png" alt="GeoSn0w">
+  </p>
 
-In the novel, *The Strange Case of Dr. Jeykll and Mr. Hyde*, Mr. Poole is Dr. Jekyll's virtuous and loyal butler. Similarly, Poole is an upstanding and effective butler that helps you build Jekyll themes. It's made by [@mdo](https://twitter.com/mdo).
+### More Information
 
-There are currently two themes built on Poole:
+No... really... I am a programmer, I am interested in hacking, security, UNIX, Operating Systems, XNU and Mach.
 
-* [Hyde](http://hyde.getpoole.com)
-* [Lanyon](http://lanyon.getpoole.com)
+I like Linux. I have hard feelings for Windows. (Fucking Updates)
 
-Learn more and contribute on [GitHub](https://github.com/poole).
+### Nickname etymology 
+<b>GeoSn0w</b>
 
-## Setup
+Geo - Represents short for "George", my real name.
 
-Some fun facts about the setup of this project include:
+Sn0w - A common suffix used by developers in the pre-iOS 7 Jailbreak community for their utilities or their nicknames. It is almost like a magic from a header, helping someone to place you in the right category by your nickname alone (iOS Development / Jailbreaking).
 
-* Built for [Jekyll](http://jekyllrb.com)
-* Developed on GitHub and hosted for free on [GitHub Pages](https://pages.github.com)
-* Coded with [Sublime Text 2](http://sublimetext.com), an amazing code editor
-* Designed and developed while listening to music like [Blood Bros Trilogy](https://soundcloud.com/maddecent/sets/blood-bros-series)
+### Disambiguation
+Some people believe I took `geo` from a famous iOS Hacker, George Hotz who goes by the name `geohot`. It is not true. As explained previously, `geo` is short for George. It just happens both me and Hotz have the same name. 
 
-Have questions or suggestions? Feel free to [open an issue on GitHub](https://github.com/poole/issues/new) or [ask me on Twitter](https://twitter.com/mdo).
+Others believe I took `Sn0w` from another iOS developer, `iH8Sn0w`. Again, untrue. He took it from the same place I took it, where it was originally used: `UltraSn0w` - an iOS unlock payload from back in the days
 
-Thanks for reading!
+### George IRL
+
+<ul>
+<li>Hardware engineer (Programming PLCs and prototyping shit).</li>
+<li>Software engineer (C#)</li>
+</ul>
+
+### Social info
+<ul>
+  <li> Relationship status: In a complicated relationship with IDA Hopper</li>
+  <li> Date of birth: Back when Commodore64 was still a thing</li>
+  </ul>
+  
+### Talk with me in
+<ul>
+<li>C</li>
+<li>C++</li>
+<li>C#</li>
+<li>Python</li>
+<li>ARM Assembly</li>
+<li>x86 Assembly</li>
+<li>Objective-C</li>
+<li>Swift</li>
+<li>BASIC</li>
+<li>HTML</li>
+</ul>
+
+### Contact me
+
+Tweet to me: @FCE365
