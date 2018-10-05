@@ -420,12 +420,6 @@ With kernel's credentials in place, and with the proper name of the snapshot, Pw
 
 Now that the snapshot has been renamed, iOS has no snapshot to mount so it simply doesn't. Problem solved. 10/10 - IGN.
 
-### Reverting Electra's changes:
-Restoring the snapshot if you wanna fully unjailbreak should be as simple as running 
-```bash
-snapUtil -n orig-fs com.apple.os.update-(manifestHash) /
-```
-
 ### Special thanks
 <ul>
 <li>Jonathan Levin for his <a href="http://newosxbook.com/index.php">books</a>, tools and impressive patience with me and my odd questions - YOU ROCK!</li>
