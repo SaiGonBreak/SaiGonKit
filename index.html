@@ -1,18 +1,489 @@
----
-layout: default
----
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Jailbreaks – GeoSn0w – Hacking</title>
 
-<div class="posts">
-  {% for post in site.posts %}
-    <article class="post">
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'> 
+    
+    <meta name="author" content="YangCheeSen" />
 
-      <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+    
+    <meta property="og:title" content="Jailbreaks" />
+    <meta property="twitter:title" content="Jailbreaks" />
+    
 
-      <div class="entry">
-        {{ post.excerpt }}
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="https://saigonbreak.github.io/SaiGonKit/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="YangCheeSen - Hacking" href="https://saigonbreak.github.io/SaiGonKit/feed.xml" />
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+<center>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+                    <a class=""><img width="60px" src="img/20181008221023.png"
+
+          <div class="site-info">
+            <h1 class="site-name"><a>YangCheeSen</a></h1>
+            <p class="site-description">Hacking và jaibreak iOS</p>
+          </div>
+
+     
+        </header>
       </div>
+    </div>
 
-      <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
-    </article>
-  {% endfor %}
-</div>
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Jailbreaks:</h1>
+
+  <div class="entry">
+    
+<p>Quá trình jailbreaks từ lâu đã là một quá trình bí ẩn, nơi hệ thống iOS đột nhiên bị jailbreak ra khỏi cùm của Apple sau khi chạy một ứng dụng trong vài giây. Trong một thời gian rất dài, chính xác những gì xảy ra trong thời gian chạy ứng dụng đó hầu như không được biết đến và thậm chí ngày nay là iOS 11 (12 thực sự), người dùng cuối (là người dùng bình thường, dân gian eta, reditter hoặc nagger) về các quy trình đang diễn ra. Trong bài đăng trên blog này, tôi sẽ cố gắng giải thích các yếu tố chính của việc bẻ khóa khi chúng được triển khai và sử dụng trong lịch sử. Bài đăng này không phải là tất cả bao gồm và các công cụ jailbreak khác nhau cho các phiên bản iOS khác nhau có thể sử dụng các bản vá lỗi và kỹ thuật khác nhau, nhưng chúng làm sôi xuống chủ yếu là những gì bạn sắp đọc. </p>
+
+<h3 id="why-jailbreak">Tại sao Jailbreak?:</h3>
+<p>Danh pháp của quá trình này có khả năng đến từ phương pháp “Bị bỏ tù” của Apple. Các ứng dụng và người dùng bị ràng buộc chỉ sử dụng những gì Apple cung cấp, đó là một phần nhỏ của những gì thiết bị có khả năng. Việc phá vỡ giới hạn các hạn chế này là phạm vi của toàn bộ quá trình Jailbreak.</p>
+
+<h3 id="for-the-eta-folk-reditter-nagger-et-al">Đối với người dùng, dân eta:</h3>
+<p>Không, Cydia không có gì để làm với Jailbreaking chính nó. Cydia là một sản phẩm phụ của “cộng đồng” bẻ khóa và một jailbreak không được coi là một jailbreak nếu nó có Cydia, giống như một jailbreak mà thiếu Cydia vẫn là một jailbreak. Điều khác biệt là đối tượng mục tiêu (hoặc cơ sở người dùng).</p>
+
+<p>Cydia là một ứng dụng GUI (Giao diện người dùng đồ họa), sử dụng dpkg và apt (trong số những người khác) trong nền để cài đặt các gói .deb (Debian). Những gói này tuân theo một định dạng rất nghiêm ngặt (cách quá nghiêm ngặt nếu bạn hỏi tôi) mà tôi sẽ thảo luận sau. Như các astute có thể đã tìm ra, bạn không cần Cydia để cài đặt gói. Vì Cydia dựa vào apt và dpkg (vv), bạn có thể chỉ cần sử dụng các tệp nhị phân này thông qua SSH hoặc thông qua ứng dụng thiết bị đầu cuối di động trên thiết bị. Cydia chỉ ở đó để làm cho quá trình này trở nên ngu xuẩn càng tốt.</p>
+
+<h3 id="so-how-does-it-work">Vì vậy, làm thế nào nó hoạt động?</h3>
+<p>Trước khi có thể mở Cydia, Installer 5, Icy Project, hoặc SSH trên thiết bị, jailbreak phải chạy. Các giai đoạn của một jailbreak khác nhau tùy thuộc vào phiên bản iOS và thiết bị. Nó được sử dụng ít phụ thuộc vào loại thiết bị, nhưng với sự ra đời của KPP (Kernel Patch Protector) trên iOS 9.0 và KTRR (được cho là Kernel Text Readonly Region) trên iOS 10, đã trở thành một điều ngày càng nhiều. Ví dụ, các thiết bị trước iPhone 7 sử dụng KPP là một phần mềm bảo vệ chạy trong EL3 (ARM ngoại lệ LEVEL 3), nhưng iPhone 7 và mới hơn đang sử dụng KTRR dựa trên phần cứng. Trong trường hợp này, một jailbreak có chứa một bỏ qua KPP (như Yalu) sẽ không hoạt động trên iPhone 7 và mới hơn bởi vì KPP chính nó không phải là một điều đó. Đối với các thiết bị này, một KTRR bỏ qua các loại là bắt buộc, như siguza đã giải thích trong việc viết lên của nó được gọi là <a href="http://siguza.github.io/KTRR/">KTRR</a>. Vì vậy, theo cách này, công cụ jailbreak phải biết rất rõ với loại thiết bị mà nó đề cập đến.</p>
+
+<h3 id="jailbreak-history-look-no-further-than-pangu-for-ios-7xx">Lịch sử Jailbreak? Nhìn xa hơn Pangu cho iOS 7.xx</h3>
+
+<p>Trước khi bất cứ điều gì có thể xảy ra trên thiết bị, tải trọng jailbreak phải được triển khai bằng cách nào đó đến thiết bị. Điều này nghe có vẻ rất tầm thường ngày hôm nay bởi vì bất kỳ ai có quyền truy cập vào một Tài khoản nhà phát triển Apple miễn phí để đăng ký một tệp IPA và cài đặt nó trên thiết bị với Cydia Impactor hoặc một cái gì đó giống như thế này, nhưng nó không sử dụng đơn giản như vậy. Việc tự ký này với Hồ sơ cấp phép đã được Apple giới thiệu với công chúng bởi iOS 9.0 mà thậm chí không còn xa lạ trong lịch sử jailbreak.</p>
+
+<p>Lâu trước đó là một điều, codesign đã được bỏ qua theo những cách rất thú vị bởi các đội Jailbreak có tay nghề cao mà tiếc là đã qua rồi. Nếu bạn vẫn có một chiếc iPhone 4 chỉ thu thập bụi xung quanh, rất có thể bạn đang jailbroken với Pangu cho iOS 7.1 - 7.1.2. Các sắc sảo có thể dễ dàng thấy rằng vì đây là nói về iOS 7.1.x, tự ký với hồ sơ cung cấp miễn phí và triển khai các IPA đã ký không phải là một điều. Vậy mẹo của họ là gì?</p>
+
+<p>Pangu for iOS 7.1- 7.1.2 có chương trình Windows và macOS của riêng nó mà triển khai cho bạn. Ứng dụng mà nó cài đặt, được gọi là "Pangu", được ký với một chứng chỉ doanh nghiệp tồn tại vào thời điểm đó và là một thứ mạnh mẽ nhưng nó không dễ dàng có được trên thị trường chợ đen như ngày hôm nay (vì thế sự ra đời của tất cả các dịch vụ ký tên này như Ignition;AppValley và FTIOS của việt Nam...).</p>
+
+<p>Tuy nhiên, giấy chứng nhận của họ đã hết hạn. Chương trình Pangu trên máy tính đã hướng dẫn người dùng đặt ngày và thời gian của thiết bị quay lại một ngày trong năm 2014 (ngày 2 tháng 6 năm 2014, cụ thể hơn).</p>
+
+<p>Ứng dụng giả được triển khai bởi chương trình Pangu và mục đích chính của nó là thả chứng chỉ ngọt đó. Bản thân IPA thực sự là một phần của bản nhị phân Pangu Windows / macOS. Điều đó có thể dễ dàng được phát hiện bằng cách sử dụng bất kỳ disassembler (tôi sử dụng Jtool và IDA). Jtool của Jonathan Levin có một tính năng dope có thể tạo ra đầu ra HTML (!) Rất hữu ích khi tôi xây dựng các bản ghi cho blog của mình.</p>
+
+<p>Đây là cách nhị phân Pangu trên macOS trông như thế nào. Xem các phân đoạn bổ sung?</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  LC 00: LC_SEGMENT_64             Mem: 0x000000000-0x100000000    __PAGEZERO
+  LC 01: LC_SEGMENT_64             Mem: 0x100000000-0x101e71000    __TEXT
+    Mem: 0x100002370-0x1000292cf        __TEXT.__text    <span class="o">(</span>Normal<span class="o">)</span>
+    Mem: 0x1000292d0-0x10002982e        __TEXT.__stubs    <span class="o">(</span>Symbol Stubs<span class="o">)</span>
+    Mem: 0x100029830-0x10002a132        __TEXT.__stub_helper    <span class="o">(</span>Normal<span class="o">)</span>
+    Mem: 0x10002a140-0x10002a690        __TEXT.__const    
+    Mem: 0x10002a690-0x10002b914        __TEXT.__objc_methname    <span class="o">(</span>C-String Literals<span class="o">)</span>
+    Mem: 0x10002b914-0x10002b9d5        __TEXT.__objc_classname    <span class="o">(</span>C-String Literals<span class="o">)</span>
+    Mem: 0x10002b9d5-0x10002beb6        __TEXT.__objc_methtype    <span class="o">(</span>C-String Literals<span class="o">)</span>
+    Mem: 0x10002bec0-0x10002e8d5        __TEXT.__cstring    <span class="o">(</span>C-String Literals<span class="o">)</span>
+    Mem: 0x10002e8d6-0x10002e92e        __TEXT.__ustring    
+    Mem: 0x10002e92e-0x10003dc04        __TEXT.__objc_cons1    
+    Mem: 0x10003dc04-0x10029ed87        __TEXT.__objc_cons2    <span class="p">;</span> Yeee, see this!
+    Mem: 0x10029ed87-0x1002b71a9        __TEXT.__objc_cons3    
+    Mem: 0x1002b71a9-0x100f11a36        __TEXT.__objc_cons4    
+    Mem: 0x100f11a36-0x10160e0ca        __TEXT.__objc_cons5    
+    Mem: 0x10160e0ca-0x101dd6e3f        __TEXT.__objc_cons6    
+    Mem: 0x101dd6e3f-0x101dd7152        __TEXT.__objc_cons7    
+    Mem: 0x101dd7152-0x101dd7a17        __TEXT.__objc_cons8    
+    Mem: 0x101dd7a17-0x101e45a6e        __TEXT.__objc_cons9    
+    Mem: 0x101e45a6e-0x101e57e74        __TEXT.__objc_cons10    
+    Mem: 0x101e57e74-0x101e69288        __TEXT.__objc_cons11    
+    Mem: 0x101e69288-0x101e699e0        __TEXT.__unwind_info    
+    Mem: 0x101e699e0-0x101e71000        __TEXT.__eh_frame    
+  LC 02: LC_SEGMENT_64            Mem: 0x101e71000-0x101e75000    __DATA
+    Mem: 0x101e71000-0x101e71028        __DATA.__program_vars    
+    Mem: 0x101e71028-0x101e710b8        __DATA.__got    <span class="o">(</span>Non-Lazy Symbol Ptrs<span class="o">)</span>
+    Mem: 0x101e710b8-0x101e710c8        __DATA.__nl_symbol_ptr    <span class="o">(</span>Non-Lazy Symbol Ptrs<span class="o">)</span>
+    Mem: 0x101e710c8-0x101e717f0        __DATA.__la_symbol_ptr    <span class="o">(</span>Lazy Symbol Ptrs<span class="o">)</span>
+    Mem: 0x101e717f0-0x101e717f8        __DATA.__mod_init_func    <span class="o">(</span>Module Init Function Ptrs<span class="o">)</span>
+    Mem: 0x101e717f8-0x101e71800        __DATA.__mod_term_func    <span class="o">(</span>Module Termination Function Ptrs<span class="o">)</span>
+    Mem: 0x101e71800-0x101e71b40        __DATA.__const    
+    Mem: 0x101e71b40-0x101e71b60        __DATA.__objc_classlist    <span class="o">(</span>Normal<span class="o">)</span>
+    Mem: 0x101e71b60-0x101e71b68        __DATA.__objc_nlclslist    <span class="o">(</span>Normal<span class="o">)</span>
+    Mem: 0x101e71b68-0x101e71b78        __DATA.__objc_catlist    <span class="o">(</span>Normal<span class="o">)</span>
+    Mem: 0x101e71b78-0x101e71ba0        __DATA.__objc_protolist    
+    Mem: 0x101e71ba0-0x101e71ba8        __DATA.__objc_imageinfo    
+    Mem: 0x101e71ba8-0x101e72f90        __DATA.__objc_const    
+    Mem: 0x101e72f90-0x101e73590        __DATA.__objc_selrefs    <span class="o">(</span>Literal Pointers<span class="o">)</span>
+    Mem: 0x101e73590-0x101e735a0        __DATA.__objc_protorefs    
+    Mem: 0x101e735a0-0x101e736f8        __DATA.__objc_classrefs    <span class="o">(</span>Normal<span class="o">)</span>
+    Mem: 0x101e736f8-0x101e73718        __DATA.__objc_superrefs    <span class="o">(</span>Normal<span class="o">)</span>
+    Mem: 0x101e73718-0x101e738a8        __DATA.__objc_data    
+    Mem: 0x101e738a8-0x101e73930        __DATA.__objc_ivar    
+    Mem: 0x101e73930-0x101e74390        __DATA.__cfstring    
+    Mem: 0x101e74390-0x101e746b8        __DATA.__data    
+    Mem: 0x101e746c0-0x101e74b60        __DATA.__bss    <span class="o">(</span>Zero Fill<span class="o">)</span>
+    Mem: 0x101e74b60-0x101e74b90        __DATA.__common    <span class="o">(</span>Zero Fill<span class="o">)</span>
+LC 03: LC_SEGMENT_64          Mem: 0x101e75000-0x101eba000    __ui0
+LC 04: LC_SEGMENT_64          Mem: 0x101eba000-0x101ebf000    __LINKEDIT
+LC 05: LC_DYLD_INFO          
+LC 06: LC_SYMTAB             
+    Symbol table is at offset 0x1ebbc48 <span class="o">(</span>32226376<span class="o">)</span>, 293 entries
+    String table is at offset 0x1ebd610 <span class="o">(</span>32232976<span class="o">)</span>, 4776 bytes
+....
+</code></pre></div></div>
+
+<p>Bạn có thấy <code class="high">__TEXT.__objc_cons2 section</code>không?</p>
+
+<p>Nếu bạn làm 0x10029ed87 - 0x10003dc04 = 2494851 byte (thập phân) => 2,494851 Megabyte. Đó là địa ngục của một phần lớn. Không có gì lạ, đó là tệp IPA được nhúng. objc_cons1, objc_cons2 và objc_cons3 là tất cả các phần được nhúng của tải trọng jailbreak (untether, plists, libraries etc).</p>
+
+<p>Trong thực tế, chúng ta hãy không nói về nó, chúng ta hãy xem nó!</p>
+
+<p>Jtool là một công cụ rất mạnh mẽ. Nó có khả năng trích xuất toàn bộ các phần từ một nhị phân. Lệnh này là jtool -e (trích xuất) / đường dẫn. Nếu chúng ta làm điều đó cho nhị phân Pangu chúng tôi sẽ nhận được một tập tin mới được gọi là “Pangu .__ TEXT .__ objc_cons2” mà như vậy xảy ra được xác định bởi các tập tin (1) như là một “dữ liệu gzip nén, từ Unix”, do đó, một tar tvfnên có thể liệt kê các nội dung khá tốt. Nó có thể và nó.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Saigon:~ YangCheeSen<span class="nv">$ </span>/Users/YangCheeSen/Desktop/ToolChain/jtool/jtool <span class="nt">-e</span> __TEXT.__objc_cons2 /Users/YangCheeSen/Desktop/pangu.app/Contents/MacOS/pangu 
+Requested section found at Offset 252932
+Extracting __TEXT.__objc_cons2 at 252932, 2494851 <span class="o">(</span>261183<span class="o">)</span> bytes into pangu.__TEXT.__objc_cons2
+Saigon:~ YangCheeSen<span class="nv">$ </span>file /Users/YangCheeSen/pangu.__TEXT.__objc_cons2
+/Users/YangCheeSen/pangu.__TEXT.__objc_cons2: gzip compressed data, from Unix
+Saigon:~ YangCheeSen<span class="nv">$ </span><span class="nb">tar </span>xvf /Users/YangCheeSen/pangu.__TEXT.__objc_cons2 
+drwxrwxrwx  0 0      0           0 Jun 27  2014 Payload/
+drwxrwxrwx  0 0      0           0 Jun 27  2014 Payload/ipa1.app/
+drwxrwxrwx  0 0      0           0 Jun 27  2014 Payload/ipa1.app/_CodeSignature/
+<span class="nt">-rwxrwxrwx</span>  0 0      0        3638 Jun 27  2014 Payload/ipa1.app/_CodeSignature/CodeResources
+<span class="nt">-rwxrwxrwx</span>  0 0      0       15112 Jun 27  2014 Payload/ipa1.app/AppIcon60x60@2x.png
+<span class="nt">-rwxrwxrwx</span>  0 0      0       20753 Jun 27  2014 Payload/ipa1.app/AppIcon76x76@2x~ipad.png
+<span class="nt">-rwxrwxrwx</span>  0 0      0        8017 Jun 27  2014 Payload/ipa1.app/AppIcon76x76~ipad.png
+<span class="nt">-rwxrwxrwx</span>  0 0      0       75320 Jun 27  2014 Payload/ipa1.app/Assets.car
+<span class="nt">-rwxrwxrwx</span>  0 0      0        7399 Jun 27  2014 Payload/ipa1.app/embedded.mobileprovision
+drwxrwxrwx  0 0      0           0 Jun 27  2014 Payload/ipa1.app/en.lproj/
+<span class="nt">-rwxrwxrwx</span>  0 0      0          74 Jun 27  2014 Payload/ipa1.app/en.lproj/InfoPlist.strings
+<span class="nt">-rwxrwxrwx</span>  0 0      0        1955 Jun 27  2014 Payload/ipa1.app/Info.plist
+<span class="nt">-rwxrwxrwx</span>  0 0      0      312208 Jun 27  2014 Payload/ipa1.app/ipa1
+<span class="nt">-rwxrwxrwx</span>  0 0      0         968 Jun 27  2014 Payload/ipa1.app/ipa1-Info.plist
+<span class="nt">-rwxrwxrwx</span>  0 0      0      235794 Jun 27  2014 Payload/ipa1.app/LaunchImage-700-568h@2x.png
+<span class="nt">-rwxrwxrwx</span>  0 0      0      785321 Jun 27  2014 Payload/ipa1.app/LaunchImage-700-Landscape@2x~ipad.png
+<span class="nt">-rwxrwxrwx</span>  0 0      0      261481 Jun 27  2014 Payload/ipa1.app/LaunchImage-700-Landscape~ipad.png
+<span class="nt">-rwxrwxrwx</span>  0 0      0      660541 Jun 27  2014 Payload/ipa1.app/LaunchImage-700-Portrait@2x~ipad.png
+<span class="nt">-rwxrwxrwx</span>  0 0      0      244644 Jun 27  2014 Payload/ipa1.app/LaunchImage-700-Portrait~ipad.png
+<span class="nt">-rwxrwxrwx</span>  0 0      0      216627 Jun 27  2014 Payload/ipa1.app/LaunchImage-700@2x.png
+<span class="nt">-rwxrwxrwx</span>  0 0      0           8 Jun 27  2014 Payload/ipa1.app/PkgInfo
+<span class="nt">-rwxrwxrwx</span>  0 0      0         150 Jun 27  2014 Payload/ipa1.app/ResourceRules.plist
+drwxrwxrwx  0 0      0           0 Jun 27  2014 Payload/ipa1.app/zh-Hans.lproj/
+<span class="nt">-rwxrwxrwx</span>  0 0      0          73 Jun 27  2014 Payload/ipa1.app/zh-Hans.lproj/InfoPlist.strings
+</span>
+
+</code></pre></div></div>
+<p>Thao tác <code class="high">tar xvf</code> sẽ trích xuất nội dung vào thư mục “Payload”. Vì vậy, tệp IPA được triển khai trên điện thoại thực sự là ipa1. Như bạn có thể thấy, có một tệp được gọi <code class="high">embedded.mobileprovision</code> có chứa chứng chỉ doanh nghiệp. Nếu chúng ta nhấp chuột phải vào nó và chọn "Nhận thông tin", Finder có khả năng hiển thị cho chúng tôi một số thông tin về chứng chỉ được nhúng. Như bạn có thể thấy, nó thuộc về "Hefei Bo Fang", bất kể đó là gì.</p>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/15067741/46533169-a763df00-c871-11e8-884b-fa51df3b0f6e.png" />
+</p>
+
+<h3 id="getting-there">Đến đó:</h3>
+
+<p>Như bạn có thể thấy, Pangu, giống như nhiều jailbreak khác dựa vào chứng chỉ nhà phát triển để bỏ qua CodeSign, nhưng việc triển khai IPA cho thiết bị không dễ như bạn nghĩ. Ngày nay chúng tôi nhanh chóng bắn Cydia Impactor, kéo và thả IPA, đăng nhập và chúng tôi đi. Đây không phải là trường hợp cho đến khi iOS 9.0, vì vậy Pangu đã phải làm những gì các đội jailbreak khác trước khi họ đã làm - sử dụng Apple chống lại chính nó.</p>
+
+<p>iTunes có thể dễ dàng giao tiếp với thiết bị và lên đến iTunes 12.x, iTunes cũng có khả năng xử lý các ứng dụng iOS. Đó là kể từ khi tước chức năng này nhưng điều đó ám chỉ đến thực tế là một hoặc nhiều khung công tác (hoặc DLL cho dân gian Windows) phải có khả năng tạo kết nối với thiết bị và thực hiện các tác vụ liên quan đến ứng dụng. Tất nhiên, chúng ta đang nói về AppleMobileDevice. (Framework / dll). Được vận chuyển với iTunes và các gói trình điều khiển của nó, khung này phần lớn được sử dụng trong các jailbreak trước và nó vẫn được sử dụng bởi tất cả các chương trình "Backup iOS / Photos / Contacts / Whatever" trên Windows để giao tiếp đáng tin cậy với thiết bị. Các API, tất nhiên, riêng tư, nhưng chúng đã bị đảo ngược lại nhiều hơn và nhiều hơn nữa bởi nhiều nhà nghiên cứu. Chúng cũng được tái tạo trong <code class="high">libimobiledevice</code> dự án.</p>
+
+<p>Như bạn có thể thấy, với điều đó tại chỗ, Pangu cuối cùng có thể nói chuyện với thiết bị và thả trọng tải vào đúng thời điểm. Phần còn lại sau một tập hợp các bản vá chính tắc gần như công thức mà tôi sẽ thảo luận bên dưới.</p>
+
+<p>Tôi chủ yếu đã cho nó như là một ví dụ để bạn có thể thấy sự khác biệt giữa việc đi qua CodeSign trở lại sau đó vs nhận được để bỏ qua CodeSign bây giờ.</p>
+
+<h3 id="canonical-patches">Bản vá Canonical:</h3>
+
+<p>Tôi đã tạo ra sơ đồ sau đây nên (theo lý thuyết) cho thấy dòng chảy của hầu hết các jailbreaks. Tất nhiên, việc thực hiện và kỹ thuật sẽ khác với phiên bản iOS cho phiên bản iOS và một số jailbreak có thể thực hiện các hành động theo một thứ tự hoàn toàn khác.</p>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/15067741/46557813-31836600-c8b9-11e8-9171-116a8ea7f939.png" />
+</p>
+
+<p>Vì vậy, như bạn có thể thấy từ biểu đồ, bước quan trọng nhất là nhận được trên thiết bị. Bạn không thể làm gì nhiều từ bên ngoài thiết bị. Các vector nhập có thể khác với jailbreak để jailbreak. Ngày nay, hầu hết các jailbreak bao gồm cả Osiris của tôi, Electra của Coolstar & Co và LiberiOS của Jonathan sử dụng các ứng dụng IPA được ký với một chứng chỉ tạm thời và được triển khai với Xcode hoặc Cydia Impactor (hoặc một dịch vụ ký) cho thiết bị. Từ đó, ứng dụng được thực thi bởi người dùng và việc khai thác được kích hoạt.</p>
+
+<p>Các phương pháp khác bao gồm nhưng không giới hạn khai thác WebKit, khai thác thư, vv Các WebKit thường phổ biến hơn. TotallyNotSpyware là một ví dụ điển hình cho iOS 10.x đến 10.3.3. Jailbreak 64-bit, và nếu chúng ta nói về di sản, dòng JailbreakMe có lẽ là ví dụ tốt nhất. Những jailbreak dựa trên WebKit này thường được triển khai bằng cách truy cập một trang web trong Safari trên thiết bị. Trang web được tạo ra để khai thác lỗ hổng webkit (WebKit nằm ở lõi của Safari) và do đó đạt được việc thực thi mã tùy ý.</p>
+
+<p>Trong phần còn lại của bài viết này, tôi sẽ giả định một Jailbreak dựa trên IPA như jailbreak11.x, LiberiOS hoặc Electra. Ngoài ra, bài viết này giả định rằng chúng ta đã có một khai thác hạt nhân thô cung cấp cho chúng ta tfp0 và cách tiếp cận KPPless.</p>
+
+<p>Sau khi ứng dụng đã được cài đặt thành công và có thể chạy, CodeSign không còn là vấn đề nữa, ít nhất là đối với giai đoạn ban đầu. Chúng tôi vẫn không thể chạy các tệp nhị phân chưa ký hoặc giả mạo, nhưng ít nhất chúng ta có thể tự chạy (ứng dụng khai thác) mà không bị AMFI giết. Tuy nhiên, vấn đề là chúng ta vẫn bị giới hạn bởi SandBox. SandBox giúp chúng tôi truy cập bất kỳ thứ gì bên ngoài vùng chứa của File System, vì vậy không có quyền R / W cho chúng tôi. Tất cả những gì chúng ta có thể thấy là dữ liệu của chính chúng ta, không gì hơn. Điều đó phải thay đổi. Chúng ta phải ban cho chính mình sức mạnh của Shai Hulud!</p>
+
+<p>SandBox là một phần mở rộng hạt nhân (KEXT), đảm bảo rằng bạn không truy cập nhiều hơn bạn đang truy cập. Theo mặc định, mọi thứ trong /var/mobile/ là sandboxed. Các ứng dụng mặc định của Apple cũng được sandboxed. Khi bạn cài đặt một ứng dụng thông qua Xcode, App Store hoặc thông qua Cydia Impactor, bạn sẽ tự động đặt ứng dụng vào /var/mobile/Containers/Bundle/Application/<UUID of="" the="" APP="">. Không có cách nào khác để cài đặt một ứng dụng, vì vậy ứng dụng jailbreak của chúng tôi sẽ được sandbox theo mặc định, bất kể là gì.</UUID></p>
+
+<p>Vậy làm thế nào để các ứng dụng có quyền truy cập vào các dịch vụ cần thiết để chúng chạy? Làm sao Deezer có thể kết nối với tai nghe Bluetooth của tôi? YouTube có thể giải mã khung như thế nào? Twitter có thể gửi thông báo cho tôi bằng cách nào? Thật đơn giản, thông qua API. Các API này cho phép ứng dụng được container của bạn giao tiếp một cách có kiểm soát với các Dịch vụ cốt lõi (bluetoothd, wifid, mediaserverd, v.v.) cũng được sandboxed và các Dịch vụ cốt lõi này nói chuyện với kexts / kernel thông qua IOKit. Vì vậy, không, bạn không trực tiếp nói chuyện với hạt nhân. Sơ đồ sau đây sẽ giúp bạn thấy nó trông như thế nào.</p>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/15067741/46547236-4fd96980-c899-11e8-8d48-1947418eb777.png" />
+</p>
+
+<p>Tất nhiên, như một ứng dụng trên iOS, không chỉ bạn không thể nhìn thấy hệ thống tập tin và dữ liệu người dùng, nhưng bạn cũng phần lớn không biết gì về sự tồn tại của bất kỳ ứng dụng nào khác. Có, thông qua một số API, bạn có thể chuyển tệp / dữ liệu sang ứng dụng khác nếu ứng dụng khác được đăng ký là ứng dụng chấp nhận xử lý đầu vào đó, nhưng ngay cả khi bạn là ứng dụng không biết gì về sự tồn tại của ứng dụng khác và nó là thông qua chuỗi các API được cung cấp bởi iOS mà bạn vượt qua tệp .PDF của bạn, ví dụ, để được mở trong bất kỳ ứng dụng nào.</p>
+
+<p>Một số ứng dụng cũng cung cấp các sơ đồ uri để bạn giao tiếp với chúng. Giả sử bạn đang sử dụng Chrome trên iOS và bạn tìm thấy số điện thoại của công ty bạn muốn gọi. Nếu bạn nhấn nó, bạn sẽ được hỏi nếu bạn thực sự muốn gọi, và sau đó bạn đi thẳng đến ứng dụng Gọi từ iOS và số đã được gọi. Làm sao?</p>
+
+<p>Đơn giản. ứng dụng Điện thoại đã đăng ký một sơ đồ uri trông như thế này: tel://XXXXXXXXXXXXvì vậy nếu bạn thêm tel: // 123456789 vào một trang HTML và nhấp vào nó trong Safari, iOS sẽ biết ai sẽ mở để xử lý điều đó. Tương tự với Facebook, Whatsapp, Twitter</p>
+
+<p>Để sử dụng lược đồ URI từ ứng dụng của bạn, bạn chỉ cần gọi phương thức UIApplication đúng. Đó là</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">UIApplication</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">open</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nv">options</span><span class="p">:</span> <span class="p">[:],</span> <span class="nv">completionHandler</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Vậy điều đó có nghĩa là bạn đã bỏ qua SandBox vì bạn có thể chuyển dữ liệu sang một ứng dụng khác và mở nó? Thậm chí không gần. Tất cả những gì bạn đã làm là thông qua một bộ API được kiểm soát rất tốt. Bạn không biết rằng ứng dụng Điện thoại tồn tại. iOS biết. Đây là cách SandBoxing cảm nhận cho một ứng dụng.</p>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/15067741/46547949-9760f500-c89b-11e8-966a-fef2dbfb28d9.png" />
+</p>
+
+<p>SandBox thoát có thể được thực hiện theo nhiều cách.</p>
+
+<p>Jailbreak11.x sử dụng công cụ thoát được xây dựng trong SandBox của QiLin, được gọi là "ShaiHulud", một tham chiếu Dune.</p>
+
+<p>QiLin (và do đó LiberiOS và Jailbreak11.x) thoát khỏi SandBox bằng cách giả sử các thông tin của Kernel. Không chỉ vậy, nhưng kể từ bây giờ chúng tôi có các thông tin của hạt nhân, chúng tôi có quyền truy cập vào bất cứ điều gì chúng tôi muốn bao gồm syscalls như execve (), fork (), và posix_spawn ()! Jonathan Levin đã giải thích rất rõ cách thức QiLin tiến hành thoát khỏi sandbox và giả sử số lượng hạt nhân <a href="http://newosxbook.com/QiLin/qilin.pdf"> trong phần write-up</a>, một phần của <code class="high"><a href="https://www.amazon.com/MacOS-iOS-Internals-III-Insecurity/dp/0991055535/ref=as_sl_pc_qf_sp_asin_til?tag=newosxbookcom-20&amp;linkCode=w00&amp;linkId=0b61c945365c9c37cd3cf88f10a5f629&amp;creativeASIN=0991055535">*OS Internals Volume III</a></code></p>
+
+<p>Tất nhiên, QiLin lưu thông tin đăng nhập của ứng dụng của chúng tôi và khôi phục chúng trước khi thoát, đó là để ngăn chặn việc tạo ra sự hoảng loạn do các khóa khác nhau điều chỉnh số lượng hạt nhân.</p>
+
+<p>Electra for iOS 11.2.x -> iOS 11.3.1 cũng sử dụng cùng một phương thức ủy nhiệm hạt nhân để bỏ qua hộp cát và các priv khác.</p>
+
+<h3 id="remounting-the-file-system">Remounting tiệp tin hệ thống:</h3>
+
+<p>Vì vậy, chúng tôi khai thác hạt nhân và có bộ nhớ hạt nhân R / W, chúng tôi khai thác một lỗi hoặc chúng tôi ban cho chính các thông tin hạt nhân để chúng tôi cũng thoát khỏi SandBox, bây giờ chúng tôi muốn giảm tải trọng của chúng tôi (có thể chứa Cydia, nhị phân, tệp cấu hình, giả tệp để kiểm tra xem cài đặt jailbreak đã được cài đặt, v.v ...). Để có thể thực hiện điều đó, chúng ta cần phải có quyền ghi trên hệ thống tệp. Theo mặc định, iOS ROOT FS được gắn kết là Chỉ đọc, vì vậy chúng tôi sẽ cần phải nhớ lại rằng, do đó tên của bản vá: Root FS Remount.</p>
+
+<p>Đây là thành phần bị mất vào tháng 7 năm 2018 khi Electra cho iOS 11.3.1 đã được phát triển, và hầu hết các thành viên eta đã đi haywire.</p>
+
+<p>Vì vậy, làm thế nào để chúng tôi làm điều đó?</p>
+
+<p>Trên Jailbreak11.x (và do đó trên LiberiOS và Jailbreak11.x), việc cập nhật lên iOS 11.3.1 hoạt động theo cách này: Như tôi đã nói, theo mặc định, ROOT FS được gắn kết là chỉ đọc. Không chỉ vậy, nhưng SandBox cũng có một móc mà ngăn cản bạn remounting nó như đọc / ghi. Móc được thực thi thông qua một cuộc gọi MACF trong mount_begin_update () và mount_common (). Tất cả các móc hiện nó để kiểm tra sự hiện diện của <code class="high">MNT_ROOTFS</code>lá cờ trong các cờ gắn kết. Nếu nó tồn tại, hoạt động thất bại. Vậy QiLin làm gì? Đơn giản. Nó tắt   <code class="high">MNT_ROOTFS</code> cờ.</p>
+
+<p>danh sách sau đây nằm <code class="high">remountRootFS</code> trong Bộ công cụ QiLin và đã được Jonathan Levin cung cấp công khai trên newosxbook.com và trong Tập đoàn Nội dung Volume III của iOS</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">remountRootFS</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+   <span class="p">...</span>
+   <span class="kt">uint64_t</span> <span class="n">rootVnodeAddr</span> <span class="o">=</span> <span class="n">findKernelSymbol</span><span class="p">(</span><span class="s">"_rootvnode"</span><span class="p">);</span>
+   <span class="kt">uint64_t</span> <span class="o">*</span><span class="n">actualVnodeAddr</span><span class="p">;</span>
+   <span class="k">struct</span> <span class="n">vnode</span> <span class="o">*</span><span class="n">rootvnode</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+   <span class="kt">char</span> <span class="o">*</span><span class="n">v_mount</span><span class="p">;</span>
+   <span class="n">status</span><span class="p">(</span><span class="s">"Attempting to remount rootFS...</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+   <span class="n">readKernelMemory</span><span class="p">(</span><span class="n">rootVnodeAddr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">actualVnodeAddr</span><span class="p">);</span>
+   <span class="n">readKernelMemory</span><span class="p">(</span><span class="o">*</span><span class="n">actualVnodeAddr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">vnode</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">rootvnode</span><span class="p">);</span>
+   <span class="n">readKernelMemory</span><span class="p">(</span><span class="n">rootvnode</span><span class="o">-&gt;</span><span class="n">v_mount</span><span class="p">,</span> <span class="mh">0x100</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">v_mount</span><span class="p">);</span>
+   <span class="c1">// Disable MNT_ROOTFS momentarily, remounts , and then flips the flag back
+</span>   <span class="kt">uint32_t</span> <span class="n">mountFlags</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="o">*</span> <span class="p">)(</span><span class="n">v_mount</span> <span class="o">+</span> <span class="mh">0x70</span><span class="p">))</span> <span class="o">&amp;</span> <span class="o">~</span><span class="p">(</span><span class="n">MNT_ROOTFS</span> <span class="o">|</span> <span class="n">MNT_RDONLY</span><span class="p">);</span>
+   <span class="n">writeKernelMemory</span><span class="p">(((</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">rootvnode</span><span class="o">-&gt;</span><span class="n">v_mount</span><span class="p">)</span> <span class="o">+</span> <span class="mh">0x70</span> <span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">mountFlags</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">mountFlags</span><span class="p">);</span>
+   <span class="kt">char</span> <span class="o">*</span><span class="n">opts</span> <span class="o">=</span> <span class="n">strdup</span><span class="p">(</span><span class="s">"/dev/disk0s1s1"</span><span class="p">);</span>
+   <span class="c1">// Not enough to just change the MNT_RDONLY flag - we have to call
+</span>   <span class="c1">// mount(2) again, to refresh the kernel code paths for mounting..
+</span>   <span class="kt">int</span> <span class="n">rc</span> <span class="o">=</span> <span class="n">mount</span><span class="p">(</span><span class="s">"apfs"</span><span class="p">,</span> <span class="s">"/"</span><span class="p">,</span> <span class="n">MNT_UPDATE</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">opts</span><span class="p">);</span>
+   <span class="n">printf</span><span class="p">(</span><span class="s">"RC: %d (flags: 0x%x) %s </span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">mountFlags</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+   <span class="n">mountFlags</span> <span class="o">|=</span> <span class="n">MNT_ROOTFS</span><span class="p">;</span>
+   <span class="n">writeKernelMemory</span><span class="p">(((</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">rootvnode</span><span class="o">-&gt;</span><span class="n">v_mount</span><span class="p">)</span> <span class="o">+</span> <span class="mh">0x70</span> <span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">mountFlags</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">mountFlags</span><span class="p">);</span>
+   <span class="c1">// Quick test:
+</span>   <span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span> <span class="p">(</span><span class="s">"/test.txt"</span><span class="p">,</span> <span class="n">O_TRUNC</span><span class="o">|</span> <span class="n">O_CREAT</span><span class="p">);</span>
+   <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="n">error</span> <span class="p">(</span><span class="s">"Failed to remount /"</span><span class="p">);</span> <span class="p">}</span>
+   <span class="k">else</span> <span class="p">{</span>
+     <span class="n">status</span><span class="p">(</span><span class="s">"Mounted / as read write :-)</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+     <span class="n">unlink</span><span class="p">(</span><span class="s">"/test.txt"</span><span class="p">);</span> <span class="c1">// clean up
+</span>   <span class="p">}</span>
+ <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</code></pre></div></div>
+<p>Mã của Jonathan Levin khá đơn giản. Lật cờ MNT_ROOTFS, gọi <code class="high">mount(2)</code> để làm mới đường dẫn mã hạt nhân để gắn, khôi phục cờ và thử nghiệm. Làm xong. Bạn đang R / W.</p>
+
+<p>Trên các bản jailbreak cũ hơn <code class="high">LightweightVolumeManager::_mapForIO</code> đã được thực hiện</p>
+
+<h3 id="electras-remount"> Remount của Electra's</h3>
+
+<p>iOS 11.3 đã tiến thêm một bước nữa bằng cách liên quan đến ảnh chụp nhanh APFS. APFS đã được sử dụng trong một thời gian dài trên iOS vào thời điểm Apple bắt đầu sử dụng ảnh chụp nhanh, nhưng khi họ đã phá vỡ bản remount đã thử và thực sự mà chúng tôi đã có cho iOS 11.2.x và thậm chí cũ hơn. Để khắc phục điều này, một lỗi mới cần được tìm thấy. vấn đề là iOS sẽ quay trở lại một ảnh chụp được gắn kết chỉ đọc, vì vậy tất cả mọi thứ chúng tôi cài đặt về điều chỉnh, nhị phân, vv đã biến mất.</p>
+
+<p>Tại thời điểm này, hai điều có thể được thực hiện: Thay đổi toàn bộ quá trình bẻ khóa và đi ROOTless, hoặc tìm đường xung quanh ảnh chụp nhanh. Đó là nhờ @ Pwn20wnd và @umanghere rằng một remount thích hợp đã được tạo ra. Umang đã tìm thấy một lỗi mà pwn20wnd đã khai thác ở Electra.</p>
+
+<p>Pwn20wnd bỏ qua cho vấn đề này snapshot cũng là một trong rất đơn giản. Đây là chức năng từ mã nguồn của Electra for iOS 11.3.1:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">remountRootAsRW</span><span class="p">(</span><span class="kt">uint64_t</span> <span class="n">slide</span><span class="p">,</span> <span class="kt">uint64_t</span> <span class="n">kern_proc</span><span class="p">,</span> <span class="kt">uint64_t</span> <span class="n">our_proc</span><span class="p">,</span> <span class="kt">int</span> <span class="n">snapshot_success</span><span class="p">){</span>
+    <span class="k">if</span> <span class="p">(</span><span class="cm">/* iOS 11.2.6 or lower don't need snapshot */</span> <span class="n">kCFCoreFoundationVersionNumber</span> <span class="o">&lt;=</span> <span class="mi">1451</span><span class="p">.</span><span class="mi">51</span> <span class="o">||</span> <span class="cm">/* we're already remounted properly */</span> <span class="n">snapshot_success</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+        <span class="k">return</span> <span class="n">remountRootAsRW_old</span><span class="p">(</span><span class="n">slide</span><span class="p">,</span> <span class="n">kern_proc</span><span class="p">,</span> <span class="n">our_proc</span><span class="p">);</span>
+    <span class="p">}</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">getOffsets</span><span class="p">(</span><span class="n">slide</span><span class="p">)){</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="kt">uint64_t</span> <span class="n">kernucred</span> <span class="o">=</span> <span class="n">rk64</span><span class="p">(</span><span class="n">kern_proc</span><span class="o">+</span><span class="n">offsetof_p_ucred</span><span class="p">);</span>
+    <span class="kt">uint64_t</span> <span class="n">ourucred</span> <span class="o">=</span> <span class="n">rk64</span><span class="p">(</span><span class="n">our_proc</span><span class="o">+</span><span class="n">offsetof_p_ucred</span><span class="p">);</span>
+     
+    <span class="kt">uint64_t</span> <span class="n">vfs_context</span> <span class="o">=</span> <span class="n">get_vfs_context</span><span class="p">();</span>
+    
+    <span class="kt">char</span> <span class="o">*</span><span class="n">dev_path</span> <span class="o">=</span> <span class="s">"/dev/disk0s1s1"</span><span class="p">;</span>
+    <span class="kt">uint64_t</span> <span class="n">devVnode</span> <span class="o">=</span> <span class="n">getVnodeAtPath</span><span class="p">(</span><span class="n">vfs_context</span><span class="p">,</span> <span class="n">dev_path</span><span class="p">);</span>
+    <span class="kt">uint64_t</span> <span class="n">specInfo</span> <span class="o">=</span> <span class="n">rk64</span><span class="p">(</span><span class="n">devVnode</span> <span class="o">+</span> <span class="n">offsetof_v_specinfo</span><span class="p">);</span>
+    
+    <span class="n">wk32</span><span class="p">(</span><span class="n">specInfo</span> <span class="o">+</span> <span class="n">offsetof_si_flags</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">//clear dev vnode's v_specflags
+</span>    
+    <span class="k">if</span> <span class="p">(</span><span class="n">file_exists</span><span class="p">(</span><span class="n">ROOTFSMNT</span><span class="p">))</span>
+        <span class="n">rmdir</span><span class="p">(</span><span class="n">ROOTFSMNT</span><span class="p">);</span>
+    
+    <span class="n">mkdir</span><span class="p">(</span><span class="n">ROOTFSMNT</span><span class="p">,</span> <span class="mo">0755</span><span class="p">);</span>
+    <span class="n">chown</span><span class="p">(</span><span class="n">ROOTFSMNT</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Temporarily setting kern ucred</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    
+    <span class="n">wk64</span><span class="p">(</span><span class="n">our_proc</span><span class="o">+</span><span class="n">offsetof_p_ucred</span><span class="p">,</span> <span class="n">kernucred</span><span class="p">);</span>
+    
+    <span class="kt">int</span> <span class="n">rv</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">mountDevAsRWAtPath</span><span class="p">(</span><span class="n">dev_path</span><span class="p">,</span> <span class="n">ROOTFSMNT</span><span class="p">)</span> <span class="o">!=</span> <span class="n">ERR_SUCCESS</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Error mounting root at %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ROOTFSMNT</span><span class="p">);</span>
+        
+        <span class="k">goto</span> <span class="n">out</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="cm">/* APFS snapshot mitigation bypass bug by CoolStar, exploitation by Pwn20wnd */</span>
+    <span class="cm">/* Disables the new APFS snapshot mitigations introduced in iOS 11.3 */</span>
+    
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Disabling the APFS snapshot mitigations</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">systemSnapshot</span> <span class="o">=</span> <span class="n">find_system_snapshot</span><span class="p">(</span><span class="n">ROOTFSMNT</span><span class="p">);</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">newSystemSnapshot</span> <span class="o">=</span> <span class="s">"orig-fs"</span><span class="p">;</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">systemSnapshot</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">goto</span> <span class="n">out</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="kt">int</span> <span class="n">rvrename</span> <span class="o">=</span> <span class="n">do_rename</span><span class="p">(</span><span class="n">ROOTFSMNT</span><span class="p">,</span> <span class="n">systemSnapshot</span><span class="p">,</span> <span class="n">newSystemSnapshot</span><span class="p">);</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">rvrename</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">goto</span> <span class="n">out</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="n">rv</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="n">unmount</span><span class="p">(</span><span class="n">ROOTFSMNT</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="n">rmdir</span><span class="p">(</span><span class="n">ROOTFSMNT</span><span class="p">);</span>
+    
+<span class="n">out</span><span class="o">:</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Restoring our ucred</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    
+    <span class="n">wk64</span><span class="p">(</span><span class="n">our_proc</span><span class="o">+</span><span class="n">offsetof_p_ucred</span><span class="p">,</span> <span class="n">ourucred</span><span class="p">);</span>
+    
+    <span class="c1">//cleanup
+</span>    <span class="n">vnode_put</span><span class="p">(</span><span class="n">devVnode</span><span class="p">);</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rv</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Disabled the APFS snapshot mitigations</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+        
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Restarting</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+        <span class="n">restarting</span><span class="p">();</span>
+        <span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+        <span class="n">do_restart</span><span class="p">();</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Failed to disable the APFS snapshot mitigations</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Nó có thể trông phức tạp. Đó là bởi vì nó là. Phải mất Pwn20wnd rất nhiều công việc để đạt được điều này bỏ qua, nhưng một khi lỗi đã được biết, vấn đề bắt đầu sụp đổ. Hãy xem, lỗi rất đơn giản: iOS sẽ hoàn nguyên về ảnh chụp nhanh hệ thống APFS sau mỗi lần khởi động lại nếu có. Đây là bắt - nếu có. Nếu không có, thay vì khởi động looping hoặc lỗi ra một cách phá hoại, iOS tình cờ tiếp tục khởi động giống như nó đã làm trên iOS 11.2.6 nơi không có ảnh chụp.</p>
+
+<p>Vì vậy, các bản vá? Tìm và đổi tên ảnh chụp nhanh thành thứ khác.</p>
+
+<p>Việc thực hiện? Hơi phức tạp hơn một chút. Nếu bạn phân tích mã, bạn có thể thấy rằng tên của ảnh chụp nhanh nói trên là động (hoặc ít nhất là chứa một phần động) để nó không thể được mã hóa cứng. Phần năng động xảy ra là <code class="high">boot-manifest-hash</code>. Trước khi làm bất cứ điều gì, Pwn20wnd dường như được ban cho mình các thông tin hạt nhân.</p>
+
+<p>Bạn có thể tự tìm thấy nó bằng cách chạy:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ioreg <span class="nt">-p</span> IODeviceTree <span class="nt">-l</span> | <span class="nb">grep </span>boot-manifest-hash
+</code></pre></div></div>
+<p>Trong Electra, tất cả các logic cho việc tìm kiếm băm khởi động-biểu hiện được đặt trong <code class="high">apfs_util.c</code> như bạn có thể thấy ở đây:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">char</span> <span class="o">*</span><span class="nf">copyBootHash</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>
+    <span class="kt">uint32_t</span> <span class="n">length</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">;</span>
+    <span class="n">io_registry_entry_t</span> <span class="n">chosen</span> <span class="o">=</span> <span class="n">IORegistryEntryFromPath</span><span class="p">(</span><span class="n">kIOMasterPortDefault</span><span class="p">,</span> <span class="s">"IODeviceTree:/chosen"</span><span class="p">);</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">MACH_PORT_VALID</span><span class="p">(</span><span class="n">chosen</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Unable to get IODeviceTree:/chosen port</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="n">kern_return_t</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">IORegistryEntryGetProperty</span><span class="p">(</span><span class="n">chosen</span><span class="p">,</span> <span class="s">"boot-manifest-hash"</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="n">buf</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">length</span><span class="p">);</span>
+    
+    <span class="n">IOObjectRelease</span><span class="p">(</span><span class="n">chosen</span><span class="p">);</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="n">ERR_SUCCESS</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Unable to read boot-manifest-hash</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// Make a hex string out of the hash
+</span>    <span class="kt">char</span> <span class="n">manifestHash</span><span class="p">[</span><span class="n">length</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+    <span class="n">bzero</span><span class="p">(</span><span class="n">manifestHash</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">manifestHash</span><span class="p">));</span>
+    
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">length</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">sprintf</span><span class="p">(</span><span class="n">manifestHash</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="s">"%02X"</span><span class="p">,</span> <span class="n">buf</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="p">}</span>
+    
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Hash: %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">manifestHash</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">strdup</span><span class="p">(</span><span class="n">manifestHash</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Hàm này được gọi từ bên trong một hàm khác gọi là <code class="high">find_system_snapshot</code> xử lý logic để tìm chính ảnh chụp nhanh đó. Hàm này gắn thêm manifestHash đã truy xuất vào phần cứng được mã hóa, <code class="high">com.apple.os.update-</code> kết quả là tên thật của ảnh chụp nhanh hiện tại. Sau đó nó trả về tên ảnh chụp nhanh cho người gọi, nhưng không phải trước khi in ra:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">find_system_snapshot</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">rootfsmnt</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">bootHash</span> <span class="o">=</span> <span class="n">copyBootHash</span><span class="p">();</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">system_snapshot</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">21</span> <span class="o">+</span> <span class="n">strlen</span><span class="p">(</span><span class="n">bootHash</span><span class="p">)));</span>
+    <span class="n">bzero</span><span class="p">(</span><span class="n">system_snapshot</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">21</span> <span class="o">+</span> <span class="n">strlen</span><span class="p">(</span><span class="n">bootHash</span><span class="p">)));</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">bootHash</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">sprintf</span><span class="p">(</span><span class="n">system_snapshot</span><span class="p">,</span> <span class="s">"com.apple.os.update-%s"</span><span class="p">,</span> <span class="n">bootHash</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"System snapshot: %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">system_snapshot</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">system_snapshot</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Với thông tin đăng nhập của hạt nhân tại chỗ, và với tên thích hợp của ảnh chụp nhanh, Pwn20wnd trả về trở lại vào rootfs_remount.c cho phần cuối cùng của khai thác tuyệt vời này - đổi tên Ảnh chụp nhanh. Anh đổi tên thành “orig-fs”, sau đó anh ta kiểm tra nếu đổi tên thành công. Sau đó, anh ta khôi phục thông tin đăng nhập của riêng mình và giảm hạt nhân. Cuối cùng, anh ta khởi động lại thiết bị. Đó là lý do tại sao lần đầu tiên bạn sử dụng Electra cho iOS 11.3-11.3.1, thiết bị của bạn sẽ có khởi động lại bắt buộc bất kể bạn sử dụng khai thác nào.</p>
+
+<p>Bây giờ ảnh chụp đã được đổi tên, iOS không có ảnh chụp để gắn kết vì vậy nó không đơn giản. Đã giải quyết được sự cố. 10/10 - IGN.</p>
+
+<h3 id="special-thanks">Cảm ơn:</h3>
+<ul>
+<li>Jonathan Levin cho những <a href="http://newosxbook.com/index.php">cuốn sách</a>, công cụ và sự kiên nhẫn đầy ấn tượng của tôi với tôi và những câu hỏi kỳ lạ của tôi.</li>
+<li>@PWn20Wnd; Electra Team; Pangu Team,...  </li>
+</ul>
+
+<h3 id="license-for-the-diagrams">Giấy phép cho hồ sơ:</h3>
+<p>Các sơ đồ đều được xây dựng bởi chính tôi trong một quá trình tẻ nhạt, tuy nhiên, tôi cho phép chúng là MIT. Sử dụng chúng như bạn vui lòng miễn là bạn tín dụng cho tôi.</p>
+
+<h3 id="errare-humanum-est"></h3>
+<p>Nếu bạn tìm thấy bất cứ điều gì sai trái trong bài viết cảm thấy tự do để nói chuyện với tôi  trên Tưitter.</p>
+
+  </div>
+
+  <div class="date">
+    Được viết ngày 8-9 tháng 10 năm 2018 bởi YangCheeSen, thành viên Zlab Team US
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:huynh.hoa613@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/Yangcheesenios"><i class="svg-icon github"></i></a>
+
+
+
+<a href="https://saigonbreak.github.io/SaiGonKit/feed.xml"><i class="svg-icon rss"></i></a>
+<a href="https://www.twitter.com/Yangcheesen"><i class="svg-icon twitter"></i></a>
+
+        </footer>
+      </div>
+    </div>
+
+    
+</center>
+  </body>
+</html>
